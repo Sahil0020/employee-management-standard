@@ -9,6 +9,8 @@ import com.sprk.employee_management.entity.EmployeeInfo;
 import com.sprk.employee_management.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -58,19 +60,33 @@ public class EmployeeController {
         return ResponseEntity.status(HttpStatus.valueOf(EmployeeConstant.SUCCESS_STATUS)).body(responseDto);
     }
 
+
     @GetMapping("/employees/{empId}")
     public ResponseEntity<ResponseDto<SuccessResponseDto<EmployeeDto>>> getempBYId(@PathVariable("empId") String empIdStr){
-        EmployeeDto newgetbyId=employeeService.getempBYId(empIdStr);
-        ResponseDto<SuccessResponseDto<EmployeeDto>> responseDto=new ResponseDto<>();
-        SuccessResponseDto<EmployeeDto> successResponseDto=new SuccessResponseDto<>();
-        successResponseDto.setMessage(String.format(EmployeeConstant.FETCH_EMP_MESSAGE));
-        successResponseDto.setData(newgetbyId);
-        successResponseDto.setStatus(EmployeeConstant.SUCCESS_STATUS);
-        responseDto.setResponse(successResponseDto);
 
-        return ResponseEntity.status(HttpStatus.valueOf(EmployeeConstant.SUCCESS_STATUS)).body(responseDto);
+            EmployeeDto newgetbyId = employeeService.getempBYId(empIdStr);
+            ResponseDto<SuccessResponseDto<EmployeeDto>> responseDto = new ResponseDto<>();
+            SuccessResponseDto<EmployeeDto> successResponseDto = new SuccessResponseDto<>();
+            successResponseDto.setMessage(String.format(EmployeeConstant.FETCH_EMP_MESSAGE));
+            successResponseDto.setData(newgetbyId);
+            successResponseDto.setStatus(EmployeeConstant.SUCCESS_STATUS);
+            responseDto.setResponse(successResponseDto);
+
+            return ResponseEntity.status(HttpStatus.valueOf(EmployeeConstant.SUCCESS_STATUS)).body(responseDto);
+
     }
 
+    @GetMapping("/download/{empId}")
+    public ResponseEntity<Resource> getempByfileName(@PathVariable("empId") String empIdStr){
+        try {
+        Resource newFile=employeeService.getempByfileName(empIdStr);
+
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename=\""+newFile.getFilename()+"\"").body(newFile);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return ResponseEntity.badRequest().build();
+    }
     @DeleteMapping("/employees/{empId}")
     public ResponseEntity<ResponseDto<SuccessResponseDto<EmployeeDto>>> deleteById(@PathVariable("empId") String empIdStr){
         EmployeeDto employeeDto = employeeService.deleteById(empIdStr);

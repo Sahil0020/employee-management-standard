@@ -13,6 +13,8 @@ import com.sprk.employee_management.repository.EmployeeRepository;
 import com.sprk.employee_management.service.EmployeeService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -35,14 +37,18 @@ import java.util.regex.Pattern;
 public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
+
+    private static final Logger logger= LoggerFactory.getLogger(EmployeeServiceImpl.class);
     @Value("${file.upload-dir}")
     private  String uploadDirectory;
     @Override
     @Transactional
     public EmployeeDto addEmployee(EmployeeFileDto employeeFileDto)throws IOException {
 
+        logger.info("Adding employee with email : {}",employeeFileDto.getEmail());
         //already exits email and phone
         if (employeeRepository.existsByEmail(employeeFileDto.getEmail())) {
+            logger.error("Could not add employee due to matching email id");
             throw new EmailAlreadyExistsException(String.format(EmployeeConstant.EMAIL_ALREADY_TAKEN, employeeFileDto.getEmail()), HttpStatus.valueOf(EmployeeConstant.BAD_REQUEST_STATUS));
         }
 

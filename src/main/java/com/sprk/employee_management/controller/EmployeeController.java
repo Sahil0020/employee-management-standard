@@ -9,20 +9,25 @@ import com.sprk.employee_management.entity.EmployeeInfo;
 import com.sprk.employee_management.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/public")
 @AllArgsConstructor
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private static final Logger logger=LoggerFactory.getLogger(EmployeeController.class);
+
 
     @PostMapping("/employees")
 
@@ -111,4 +116,21 @@ public class EmployeeController {
         return ResponseEntity.status(HttpStatus.valueOf(EmployeeConstant.SUCCESS_STATUS)).body(responseDto);
     }
 
+
+
+
+    @GetMapping("/security/hello")
+    public String hello(){
+        logger.info("Hello api called");
+        logger.debug("This is debug msg");
+        System.out.println("hello login");
+        return "Hello login";
+    }
+    @GetMapping("/security/hi")
+    public String hi(){
+        logger.info("Hello api called");
+        logger.debug("This is debug msg");
+        System.out.println("hello login");
+        return "Hello hi";
+    }
 }
